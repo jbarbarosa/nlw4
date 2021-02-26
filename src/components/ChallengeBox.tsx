@@ -1,26 +1,42 @@
 import { useContext } from 'react';
 import { ChallengesContext} from '../contexts/ChallengesContext'
+import { CountdownContext } from '../contexts/CountdownContext';
 import styles from '../styles/components/ChallengeBox.module.css'
 
 export function ChallengeBox() {
-  const contextData = useContext(ChallengesContext);
+  const { activeChallenge, resetChallenge, completeChallenge } = useContext(ChallengesContext);
+  const { resetCountdown } = useContext(CountdownContext); 
 
-  const currentlyActive = true;
+  function handleChallengeSucceeded() {
+    completeChallenge();
+    resetCountdown();
+  }
+
+  function handleChallengeFailed() {
+    resetChallenge();
+    resetCountdown();
+  }
   return (
     <div className={styles.challengeBoxContainer}>
-      { currentlyActive ? (
+      { activeChallenge ? (
         <div className={styles.challengeActive}>
-          <header>Ganhe 400xp</header>
+          <header>{activeChallenge.ammount}</header>
           <main>
-            <img src="icons/body.svg"/>
+            <img src={`icons/${activeChallenge.type}.svg`}/>
             <strong>Novo desafio</strong>
-            <p>Levante e faça uma caminhada</p>
+            <p>{activeChallenge.description}</p>
           </main>
           <footer>
-            <button type="button" className={styles.failedButton}>
+            <button 
+            type="button"
+            className={styles.failedButton}
+            onClick={handleChallengeFailed}>
               Falhei :(
             </button>
-            <button type="button" className={styles.succeededButton}>
+            <button 
+            type="button"
+            className={styles.succeededButton}
+            onClick={handleChallengeSucceeded}>
               Consegui
             </button>
           </footer>
@@ -31,7 +47,7 @@ export function ChallengeBox() {
         <p>
           <img src="icons/level-up.svg" alt="Level Up"/>
           Avance de nível completando desafios
-        </p>)
+        </p>
       </div>
       )}
     </div>
